@@ -5,3 +5,10 @@ Major reference:
 Python for Data Analysis, 3E by Wes McKinney
 
 https://wesmckinney.com/book/
+
+
+## Contents
+
+### Chapter 1
+* Colab operation: Mounting to MyDrive
+* Python: Import self created module
