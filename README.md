@@ -13,6 +13,8 @@ https://wesmckinney.com/book/
 * Colab operation: Mounting to MyDrive
 * Python: Import self created module
 
+### Chapter 98
+* Some code snippets
 
 ### Chapter 99
 * Some built-in functions/methods
