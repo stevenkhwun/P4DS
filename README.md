@@ -6,6 +6,14 @@ Python for Data Analysis, 3E by Wes McKinney
 
 https://wesmckinney.com/book/
 
+The files are stored in the following directory:
+
+C:/Users/andyw/Repositories/P4DS
+
+of the Dell Desktop.
+
+and
+
 
 ## Contents
 
