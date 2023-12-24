@@ -18,13 +18,6 @@ C:/Users/steve/GitHub/P4DS
 
 of the Dell Laptop.
 
-## Contents
-
-### Built-In Data Structures, Functions, and Files
-* Tuple
-* List
-
-
 
 ## Contents
 
