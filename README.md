@@ -21,7 +21,7 @@ of the Dell Laptop.
 ## Contents
 
 ### Built-In Data Structures, Functions, and Files
-* Tuple
+* [Tuple](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Tuple.ipynb)
 * [List](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/List.ipynb)
 
 
