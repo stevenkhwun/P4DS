@@ -13,7 +13,7 @@ https://wesmckinney.com/book/
 * [Tuple](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Tuple.ipynb)
 * [List](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/List.ipynb)
 * [Dictionary](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Dictionary.ipynb)
-
+* [Set](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Set.ipynb)
 
 
 ## Contents (Phased out)
