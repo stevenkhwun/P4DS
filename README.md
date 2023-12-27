@@ -15,6 +15,7 @@ https://wesmckinney.com/book/
 * [Dictionary](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Dictionary.ipynb)
 * [Set](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Set.ipynb)
 * [Built-In Sequence Functions and Comprehensions](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Built-In_Sequence_Functions.ipynb)
+* [Functions](https://nbviewer.org/github/stevenkhwun/P4DS/blob/main/Functions.ipynb)
 
 
 ## Contents (Phased out)
