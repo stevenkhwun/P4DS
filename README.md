@@ -29,3 +29,5 @@ https://wesmckinney.com/book/
 
 ### Chapter 99
 * Some built-in functions/methods
+
+Last updated on 25 March 2024
