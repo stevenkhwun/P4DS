@@ -9,6 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{python echo=FALSE}
+import warnings
+warnings.filterwarnings('ignore')
+```
+
 
 <p style="text-align:center">
     <a href="https://skills.network" target="_blank">
@@ -62,3 +67,38 @@ df = pd.read_csv(filepath, header=0)
 df.head()
 ```
 
+## Analyzing Individual Feature Patterns Using Visualization
+
+Import visualization packages "Matplotlib" and "Seaborn". Don't forget about "%matplotlib inline" to plot in a Jupyter notebook.
+
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+
+```{python}
+# list the data types for each column
+print(df.dtypes)
+```
+
+
+```{python}
+numeric_df = df.select_dtypes(include=['float64', 'int64'])
+numeric_df.corr()
+```
+
+```{python}
+df[['bore', 'stroke', 'compression-ratio', 'horsepower']].corr()
+```
+
+```{python}
+# Engine size as potential predictor variable of price
+sns.regplot(x="engine-size", y="price", data=df)
+plt.ylim(0,)
+```
+
+
+# Reference
+
+[How to Disable Warnings in Jupyter Notebook](https://saturncloud.io/blog/how-to-disable-warnings-in-jupyter-notebook/)
