@@ -2,7 +2,15 @@
 title: "Exploratory Data Analysis"
 author: "SW"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+    number_sections: yes
+    toc_float:
+      collapsed: no
+      #smooth_scroll: yes
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -21,10 +29,11 @@ warnings.filterwarnings('ignore')
     </a>
 </p>
 
-# Exploratory Data Analysis
+
+<font size="6">Exploratory Data Analysis</font>
     
 
-## Objectives
+<font size="4">Objectives</font>
 
 After completing this lab you will be able to:
 
@@ -48,9 +57,9 @@ After completing this lab you will be able to:
  
 <hr>
 
-## Import Data from Module 2
+# Import Data from Module 2
 
-#### Setup
+## Setup
 
 Import libraries: 
 
@@ -59,15 +68,21 @@ import pandas as pd
 import numpy as np
 ```
 
+Download the dataset and store it in dataframe `df`:
 
 ```{python}
 filepath='https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/\
 IBMDeveloperSkillsNetwork-DA0101EN-SkillsNetwork/labs/Data%20files/automobileEDA.csv'
 df = pd.read_csv(filepath, header=0)
+```
+
+View the first 5 values of the dataframe using `datafame.head()`:
+
+```{python}
 df.head()
 ```
 
-## Analyzing Individual Feature Patterns Using Visualization
+# Analyzing Individual Feature Patterns Using Visualization
 
 Import visualization packages "Matplotlib" and "Seaborn". Don't forget about "%matplotlib inline" to plot in a Jupyter notebook.
 
