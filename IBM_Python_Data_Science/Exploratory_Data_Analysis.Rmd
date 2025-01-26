@@ -46,7 +46,7 @@ After completing this lab you will be able to:
 
 <div class="alert alert-block alert-info" style="margin-top: 20px">
 <ol>
-    <li><a href='#Import-Data-from-Module-2'>Import Data from Module</a>
+    <li><a href='#Import-Data'>Import Data</a>
     <li><a href='#Analyzing-Individual-Feature-Patterns-Using-Visualization'>Analyzing Individual Feature Patterns using Visualization</a>
     <li><a href='#Descriptive-Statistical-Analysis'>Descriptive Statistical Analysis</a>
     <li><a href='#Basics-of-Grouping'>Basics of Grouping</a>
@@ -57,9 +57,7 @@ After completing this lab you will be able to:
  
 <hr>
 
-# Import Data from Module 2
-
-## Setup
+# Import Data
 
 Import libraries: 
 
@@ -91,21 +89,51 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 ```
 
+## Data types
+
+<h4>How to choose the right visualization method?</h4>
+
+<p>When visualizing individual variables, it is important to first understand what type of variable you are dealing with. This will help us find the right visualization method for that variable.</p>
+
 
 ```{python}
 # list the data types for each column
 print(df.dtypes)
 ```
 
+If we want to know the data type of a particular column, we can use the method `df['Column-Name'].dtypes`. For example, the data type of the column `peak-rpm` is given by:
 
 ```{python}
+df['peak-rpm'].dtypes
+```
+
+Further, we can calculate the correlation between variables  of type "int64" or "float64" using the method "corr":
+
+```{python}
+# select only numeric columns for correlation
 numeric_df = df.select_dtypes(include=['float64', 'int64'])
 numeric_df.corr()
 ```
 
+The diagonal elements are always one.
+
+We can also find the correlation between particular columns. For example, we can use the following code to find the correlation between the columns `bore`, `stroke`, `compression-ratio`, and `horsepower`.
+
 ```{python}
 df[['bore', 'stroke', 'compression-ratio', 'horsepower']].corr()
 ```
+
+## Continuous Numerical Variables
+
+<p>Continuous numerical variables are variables that may contain any value within some range. They can be of type `int64` or `float64`. A great way to visualize these variables is by using scatterplots with fitted lines.</p>
+
+<p>In order to start understanding the (linear) relationship between an individual variable and the price, we can use `regplot` which plots the scatterplot plus the fitted regression line for the data. This will be useful later on for visualizing the fit of the simple linear regression model as well. </p>
+
+Let's see several examples of different linear relationships:
+
+### Positive Linear Relationship
+
+Let's find the scatterplot of "engine-size" and "price".
 
 ```{python}
 # Engine size as potential predictor variable of price
@@ -113,7 +141,190 @@ sns.regplot(x="engine-size", y="price", data=df)
 plt.ylim(0,)
 ```
 
+<p>As the engine-size goes up, the price goes up: this indicates a positive direct correlation between these two variables. Engine size seems like a pretty good predictor of price since the regression line is almost a perfect diagonal line.</p>
+
+We can examine the correlation between 'engine-size' and 'price' and see that it's approximately 0.87.
+
+```{python}
+df[['engine-size','price']].corr()
+```
+
+### Negative Linear Relationship
+
+Highway mpg is a potential predictor variable of price. Let's find the scatterplot of `highway-mpg` and `price`.
+
+```{python}
+sns.regplot(x='highway-mpg', y='price', data=df)
+```
+
+As `highway-mpg` goes up, the `price` goes down: this indicates an inverse/negative relationship between these two variables. Highway mpg could potentially be a predictor of price.
+
+We can examine the correlation between `highway-mpg` and `price` and see it's approximately -0.704.
+
+```{python}
+df[['highway-mpg', 'price']].corr()
+```
+
+### Weak Linear Relationship
+
+Let's see if `peak-rpm` is a predictor variable of `price`.
+
+```{python}
+sns.regplot(x='peak-rpm', y='price', data=df)
+```
+
+Peak rpm does not seem like a good predictor of the price at all since the regression line is close to horizontal. Also, the data points are very scattered and far from the fitted line, showing lots of variability. Therefore, it's not a reliable variable.
+
+We can examine the correlation between 'peak-rpm' and 'price' and see it's approximately -0.101616.
+
+```{python}
+df[['peak-rpm','price']].corr()
+```
+
+
+## Categorical Variables
+
+<p>These are variables that describe a 'characteristic' of a data unit, and are selected from a small group of categories. The categorical variables can have the type `object` or `int64`. A good way to visualize categorical variables is by using boxplots.</p>
+
+Let's look at the relationship between `body-style` and `price`.
+
+
+```{python}
+sns.boxplot(x="body-style", y="price", data=df)
+```
+
+We see that the distributions of price between the different body-style categories have a significant overlap, so body-style would not be a good predictor of price. Let's examine engine `engine-location` and `price`:
+
+```{python}
+sns.boxplot(x='engine-location', y='price', data=df)
+```
+
+Here we see that the distribution of price between these two engine-location categories, front and rear, are distinct enough to take engine-location as a potential good predictor of price.
+
+Let's examine `drive-wheels` and `price`.
+
+```{python}
+sns.boxplot(x='drive-wheels', y='price', data=df)
+```
+
+Here we see that the distribution of price between the different drive-wheels categories differs. As such, drive-wheels could potentially be a predictor of price.
+
+
+# Descriptive Statistical Analysis
+
+## <b>describe</b> method
+
+<p>Let's first take a look at the variables by utilizing a description method.</p>
+
+<p>The <b>describe</b> function automatically computes basic statistics for all continuous variables. Any NaN values are automatically skipped in these statistics.</p>
+
+This will show:
+<ul>
+    <li>the count of that variable</li>
+    <li>the mean</li>
+    <li>the standard deviation (std)</li> 
+    <li>the minimum value</li>
+    <li>the IQR (Interquartile Range: 25%, 50% and 75%)</li>
+    <li>the maximum value</li>
+</ul>
+
+
+<p>We can apply the method <b>describe</b> as follows:</p>
+
+```{python}
+df.describe()
+```
+
+The default setting of <b>describe</b> skips variables of type `object`. We can apply the method <b>describe</b> on the variables of type `object` as follows:
+
+```{python}
+df.describe(include=['object'])
+```
+
+We can also use the following code to find the basic statistics of some particular columns:
+
+```{python}
+df[['peak-rpm','price']].describe()
+```
+
+## <b>value_counts</b> method
+
+<p>Value counts is a good way of understanding how many units of each characteristic/variable we have. We can apply the `value_counts` method on the column "drive-wheels". Don’t forget the method `value_counts` only works on pandas series, not pandas dataframes. As a result, we only include one bracket <code>df['drive-wheels']</code>, not two brackets <code>df[['drive-wheels']]</code>.</p>
+
+```{python}
+df['drive-wheels'].value_counts()
+```
+
+We can convert the series to a dataframe as follows:
+
+```{python}
+df['drive-wheels'].value_counts().to_frame()
+```
+
+Let's repeat the above steps but save the results to the dataframe `drive_wheels_counts` and rename the column `drive-wheels` to `value_counts`.
+
+```{python}
+drive_wheels_counts = df['drive-wheels'].value_counts().to_frame()
+drive_wheels_counts.reset_index(inplace=True)
+drive_wheels_counts = drive_wheels_counts.rename(columns={'drive-wheels':'value_counts'})
+drive_wheels_counts
+```
+
+Now let's rename the index to 'drive-wheels':
+
+```{python}
+drive_wheels_counts.index.name = 'drive-wheels'
+drive_wheels_counts
+```
+
+We can repeat the above process for the variable 'engine-location'.
+
+```{python}
+# engine-location as variable
+engine_loc_counts = df['engine-location'].value_counts().to_frame()
+engine_loc_counts.rename(columns={'engine-location': 'value_counts'}, inplace=True)
+engine_loc_counts.index.name = 'engine-location'
+engine_loc_counts
+```
+
+After examining the value counts of the engine location, we see that engine location would not be a good predictor variable for the price. This is because we only have three cars with a rear engine and 198 with an engine in the front, so this result is skewed. Thus, we are not able to draw any conclusions about the engine location.
+
+
+# Basics of Grouping
+
+<p>The <b>groupby</b> method groups data by different categories. The data is grouped based on one or several variables, and analysis is performed on the individual groups.</p>
+
+<p>For example, let's group by the variable `drive-wheels`. We see that there are 3 different categories of drive wheels.</p>
+
+```{python}
+df['drive-wheels'].unique()
+```
+
+If we want to know, on average, which type of drive wheel is most valuable, we can group `drive-wheels` and then average them.
+
+We can select the columns `drive-wheels`, `body-style` and `price`, then assign it to the variable `df_group_one`.
+
+```{python}
+df_group_one = df[['drive-wheels', 'body-style', 'price']]
+```
+
+We can then calculate the average price for each of the different categories of data.
+
+```{python}
+# grouping results
+df_grouped = df_group_one.groupby(['drive-wheels'], as_index=False).agg({'price': 'mean'})
+df_grouped
+```
+
+
+
+
+
+
+
 
 # Reference
 
 [How to Disable Warnings in Jupyter Notebook](https://saturncloud.io/blog/how-to-disable-warnings-in-jupyter-notebook/)
+
+[R Markdown: Table of Contents](https://www.youtube.com/watch?v=KsUnY674VIM)
