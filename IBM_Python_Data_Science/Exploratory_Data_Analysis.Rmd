@@ -1,0 +1,64 @@
+---
+title: "Exploratory Data Analysis"
+author: "SW"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<p style="text-align:center">
+    <a href="https://skills.network" target="_blank">
+    <img src="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/assets/logos/SN_web_lightmode.png" width="300" alt="Skills Network Logo">
+    </a>
+</p>
+
+# Exploratory Data Analysis
+    
+
+## Objectives
+
+After completing this lab you will be able to:
+
+* Explore features or characteristics to predict price of car
+* Analyze patterns and run descriptive statistical analysis
+* Group data based on identified parameters and create pivot tables
+* Identify the effect of independent attributes on price of cars
+
+<h2>Table of Contents</h2>
+
+<div class="alert alert-block alert-info" style="margin-top: 20px">
+<ol>
+    <li><a href='#Import-Data-from-Module-2'>Import Data from Module</a>
+    <li><a href='#Analyzing-Individual-Feature-Patterns-Using-Visualization'>Analyzing Individual Feature Patterns using Visualization</a>
+    <li><a href='#Descriptive-Statistical-Analysis'>Descriptive Statistical Analysis</a>
+    <li><a href='#Basics-of-Grouping'>Basics of Grouping</a>
+    <li><a href='#Correlation-and-Causation'>Correlation and Causation</a>
+</ol>
+
+</div>
+ 
+<hr>
+
+## Import Data from Module 2
+
+#### Setup
+
+Import libraries: 
+
+```{python}
+import pandas as pd
+import numpy as np
+```
+
+
+```{python}
+filepath='https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/\
+IBMDeveloperSkillsNetwork-DA0101EN-SkillsNetwork/labs/Data%20files/automobileEDA.csv'
+df = pd.read_csv(filepath, header=0)
+df.head()
+```
+
