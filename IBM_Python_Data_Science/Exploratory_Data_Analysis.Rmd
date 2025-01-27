@@ -30,10 +30,7 @@ warnings.filterwarnings('ignore')
 </p>
 
 
-<font size="6">Exploratory Data Analysis</font>
-    
-
-<font size="4">Objectives</font>
+<font size="5">Objectives</font>
 
 After completing this lab you will be able to:
 
@@ -292,6 +289,8 @@ After examining the value counts of the engine location, we see that engine loca
 
 # Basics of Grouping
 
+## <b>groupby</b> method
+
 <p>The <b>groupby</b> method groups data by different categories. The data is grouped based on one or several variables, and analysis is performed on the individual groups.</p>
 
 <p>For example, let's group by the variable `drive-wheels`. We see that there are 3 different categories of drive wheels.</p>
@@ -311,10 +310,167 @@ df_group_one = df[['drive-wheels', 'body-style', 'price']]
 We can then calculate the average price for each of the different categories of data.
 
 ```{python}
-# grouping results
+# group by one variable
 df_grouped = df_group_one.groupby(['drive-wheels'], as_index=False).agg({'price': 'mean'})
 df_grouped
 ```
+
+<p>From our data, it seems rear-wheel drive vehicles are, on average, the most expensive, while 4-wheel and front-wheel are approximately the same in price.</p>
+
+<p>You can also group by multiple variables. For example, let's group by both `drive-wheels` and `body-style`. This groups the dataframe by the unique combination of 'drive-wheels' and 'body-style'. We can store the results in the variable `grouped_test1`.</p>
+
+```{python}
+# group by multiple variables
+grouped_test1 = df_group_one.groupby(['drive-wheels','body-style'], as_index=False).mean()
+grouped_test1
+```
+
+## <b>pivot</b> method
+
+This grouped data is much easier to visualize when it is made into a pivot table. A pivot table is like an Excel spreadsheet, with one variable along the column and another along the row. We can convert the dataframe to a pivot table using the method <b>pivot</b> to create a pivot table from the groups.
+
+In this case, we will leave the `drive-wheels` variable as the rows of the table, and pivot `body-style` to become the columns of the table:
+
+```{python}
+# create a pivot table
+grouped_pivot = grouped_test1.pivot(index='drive-wheels', columns='body-style')
+grouped_pivot
+```
+
+
+<p>Often, we won't have data for some of the pivot cells. We can fill these missing cells with the value 0, but any other value could potentially be used as well. It should be mentioned that missing data is quite a complex subject and is an entire course on its own.</p>
+
+```{python}
+# fill missing data with the value 0
+grouped_pivot = grouped_pivot.fillna(0)
+grouped_pivot
+```
+
+<b>Further Example</b>
+
+Use the <b>groupby</b> method to find the average 'price' of each car based on 'body-style'.
+
+```{python}
+grouped_test_bodystyle = df_group_one.groupby(['body-style'], as_index=False).agg({'price': 'mean'})
+grouped_test_bodystyle
+```
+
+Alternatively, we can specify a new dataframe for just two variables `body-style` and `price` and then just use the <b>mean</b> method as follows:
+
+```{python eval=FALSE}
+# alternative code
+# this code chunk was not executed
+df_gptest2 = df[['body-style','price']]
+grouped_test_bodystyle = df_gptest2.groupby(['body-style'],as_index= False).mean()
+grouped_test_bodystyle
+```
+
+## Heat map
+
+We will use the `pyplot` function in `matplotlib` to create a heat map to visualize the relationship between Body Style, Drive wheel and the Price.
+
+```{python}
+# use the grouped results
+plt.pcolor(grouped_pivot, cmap='RdBu')
+plt.colorbar()
+plt.show
+```
+
+<p>The heatmap plots the target variable (price) proportional to colour with respect to the variables 'drive-wheel' and 'body-style' on the vertical and horizontal axis, respectively. This allows us to visualize how the price is related to 'drive-wheel' and 'body-style'.</p>
+
+<p>The default labels convey no useful information to us. Let's change that:</p>
+
+```{python}
+fig, ax = plt.subplots()
+im = ax.pcolor(grouped_pivot, cmap='RdBu')
+
+#label names
+row_labels = grouped_pivot.columns.levels[1]
+col_labels = grouped_pivot.index
+
+#move ticks and labels to the center
+ax.set_xticks(np.arange(grouped_pivot.shape[1]) + 0.5, minor=False)
+ax.set_yticks(np.arange(grouped_pivot.shape[0]) + 0.5, minor=False)
+
+#insert labels
+ax.set_xticklabels(row_labels, minor=False)
+ax.set_yticklabels(col_labels, minor=False)
+
+#rotate label if too long
+# plt.xticks(rotation=90)
+
+fig.colorbar(im)
+plt.show()
+```
+
+Visualization is very important in data science, and Python visualization packages provide great freedom.
+
+The main question we want to answer in this module is, "What are the main characteristics which have the most impact on the car price?".
+
+To get a better measure of the important characteristics, we look at the correlation of these variables with the car price. In other words: how is the car price dependent on this variable?
+
+# Correlation and Causation
+
+<p><b>Correlation</b>: a measure of the extent of interdependence between variables.</p>
+
+<p><b>Causation</b>: the relationship between cause and effect between two variables.</p>
+
+<p>It is important to know the difference between these two. Correlation does not imply causation. Determining correlation is much simpler  the determining causation as causation may require independent experimentation.</p>
+
+
+<p><b>Pearson Correlation</b></p>
+<p>The Pearson Correlation measures the linear dependence between two variables X and Y.</p>
+<p>The resulting coefficient is a value between -1 and 1 inclusive, where:</p>
+<ul>
+    <li><b>1</b>: Perfect positive linear correlation.</li>
+    <li><b>0</b>: No linear correlation, the two variables most likely do not affect each other.</li>
+    <li><b>-1</b>: Perfect negative linear correlation.</li>
+</ul>
+
+
+Pearson Correlation is the default method of the function <b>corr</b>. Like before, we can calculate the Pearson Correlation of the of the `int64` or `float64` variables.
+
+```{python}
+numeric_df.corr()
+```
+
+Sometimes we would like to know the significant of the correlation estimate.
+
+<b>P-value</b>
+<p>What is this P-value? The P-value is the probability value that the correlation between these two variables is statistically significant. Normally, we choose a significance level of 0.05, which means that we are 95% confident that the correlation between the variables is significant.</p>
+
+By convention, when the
+<ul>
+    <li>p-value is $<$ 0.001: we say there is strong evidence that the correlation is significant.</li>
+    <li>the p-value is $<$ 0.05: there is moderate evidence that the correlation is significant.</li>
+    <li>the p-value is $<$ 0.1: there is weak evidence that the correlation is significant.</li>
+    <li>the p-value is $>$ 0.1: there is no evidence that the correlation is significant.</li>
+</ul>
+
+We can obtain this information using  "stats" module in the "scipy"  library.
+
+```{python}
+from scipy import stats
+```
+
+
+<b>Wheel-Base vs. Price</b>
+
+Let's calculate the Pearson Correlation Coefficient and P-value of 'wheel-base' and 'price'.
+
+```{python}
+pearson_coef, p_value = stats.pearsonr(df['wheel-base'], df['price'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+```
+
+<b>Conclusion:</b>
+<p>Since the p-value is $<$ 0.001, the correlation between wheel-base and price is statistically significant, although the linear relationship isn't extremely strong (~0.585).</p>
+
+
+
+
+
+
 
 
 
