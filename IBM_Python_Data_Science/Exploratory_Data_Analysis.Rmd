@@ -86,6 +86,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 ```
 
+```{python}
+import prettytable
+prettytable.DEFAULT = 'DEFAULT'
+```
+
+
 ## Data types
 
 <h4>How to choose the right visualization method?</h4>
