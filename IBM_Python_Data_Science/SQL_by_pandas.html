@@ -1491,8 +1491,21 @@ font-size: 0.95em;
 </div>
 
 
+<div class="alert alert-block alert-info" style="margin-top: 20px">
+<h5>
+Python method/function used
+</h5>
+<ul>
+<li><b><a href="#dropduplicates">pandas.DataFrame.drop_duplicates()</a></b></li>
+<li><b><a href="#head">pandas.DataFrame.head()</a></b></li>
+<li><b><a href="#nlargest">pandas.DataFrame.nlargest()</a></b></li>
+</ul>
+</div>
 <hr>
 <p><font size="6">Introduction</font></p>
+<p>(This page is adapted from pandas’ <a href="https://pandas.pydata.org/docs/getting_started/comparison/comparison_with_sql.html#">Comparison
+with SQL</a> and a Medium article <a href="https://towardsdatascience.com/pandas-equivalent-of-10-useful-sql-queries-f79428e60bd9">Pandas
+equivalent of 10 useful SQL queries</a> by <em>Dorian Lazar</em>.)</p>
 <p>This page is meant to provide some examples of how various SQL
 operations would be performed using pandas.</p>
 <p>As is customary, we import pandas and NumPy as follows:</p>
@@ -1567,8 +1580,77 @@ names to your DataFrame:</p>
 ## [244 rows x 4 columns]</code></pre>
 <p>Calling the <code>DataFrame</code> without the list of column names
 would display all columns (akin to SQL’s *).</p>
-<div id="add-a-calculated-column" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Add a calculated
+<div id="dropduplicates" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> SELECT DISTINCT</h2>
+<p>The <b>SELECT DISTINCT</b> statement returns only unique rows from a
+table. In a data frame there may be duplicate values. If you want to get
+only distinct rows (remove duplicates) it is as simple as calling the
+<code>.drop_duplicates()</code> method.</p>
+<pre class="python"><code>tips[[&#39;sex&#39;]].drop_duplicates()</code></pre>
+<pre><code>##       sex
+## 0  Female
+## 1    Male</code></pre>
+</div>
+<div id="head" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> LIMIT</h2>
+<pre class="sql"><code>SELECT TOP number col1, col2, ... FROM table</code></pre>
+<p>or</p>
+<pre class="sql"><code>SELECT col1, col2, ... FROM table LIMIT number</code></pre>
+<p>The <b>TOP</b> or <b>LIMIT</b> keyword in SQL is used to limit the
+number of returned rows from the top of the table.</p>
+<p>In pandas this is very easy to do with <code>.head(number)</code>
+method. Pandas also has the <code>.tail(number)</code> method for
+showing the rows from the end of data frame.</p>
+<p>For example, to execute the following SQL queries:</p>
+<pre class="sql"><code>SELECT * FROM tips
+LIMIT 5;</code></pre>
+<p>We can simple run the following code:</p>
+<pre class="python"><code>tips.head(5)</code></pre>
+<pre><code>##    total_bill   tip     sex smoker  day    time  size
+## 0       16.99  1.01  Female     No  Sun  Dinner     2
+## 1       10.34  1.66    Male     No  Sun  Dinner     3
+## 2       21.01  3.50    Male     No  Sun  Dinner     3
+## 3       23.68  3.31    Male     No  Sun  Dinner     2
+## 4       24.59  3.61  Female     No  Sun  Dinner     4</code></pre>
+</div>
+<div id="nlargest" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Top n rows with
+OFFSET</h2>
+<p>In SQL, we use <b>OFFSET</b> to skip the first n rows from
+displaying. For example, if we want to inspect from the 11th entry of
+the table, we can use <b>OFFSET 10</b>.</p>
+<p>In pandas, we can do similar thing by using <b>.nlargest()</b>
+method. However, we can only act on the columns which can be ordered and
+only displayed the ordered table.</p>
+<p>For example, the following SQL code displays a table which lists 10
+entries started from the 6th largest tips:</p>
+<pre class="sql"><code>SELECT * FROM tips
+ORDER BY tip DESC
+LIMIT 10 OFFSET 5;</code></pre>
+<p>We can do this in pandas by the following codes:</p>
+<pre class="python"><code>tips.nlargest(10 + 5, columns=&quot;tip&quot;).tail(10)</code></pre>
+<pre><code>##      total_bill   tip     sex smoker   day    time  size
+## 183       23.17  6.50    Male    Yes   Sun  Dinner     4
+## 214       28.17  6.50  Female    Yes   Sat  Dinner     3
+## 47        32.40  6.00    Male     No   Sun  Dinner     4
+## 239       29.03  5.92    Male     No   Sat  Dinner     3
+## 88        24.71  5.85    Male     No  Thur   Lunch     2
+## 181       23.33  5.65    Male    Yes   Sun  Dinner     2
+## 44        30.40  5.60    Male     No   Sun  Dinner     4
+## 52        34.81  5.20  Female     No   Sun  Dinner     4
+## 85        34.83  5.17  Female     No  Thur   Lunch     4
+## 211       25.89  5.16    Male    Yes   Sat  Dinner     4</code></pre>
+<p>In fact, the above code select the top 16 (10 + 5) rows according to
+the amount of tips received. However, it only display the last 10 rows
+(<code>.tail(10)</code>). Effectively, the code give a table of 10 larg
+tips starting from the 6th largest.</p>
+<p>We can do similar operation with the <code>.nsmallest()</code>
+method. We can find more information on the website of pandas for <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nlargest.html">pandas.DataFrame.nlargest</a>
+and <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nsmallest.html">pandas.DataFrame.nsmallest</a>
+methods.</p>
+</div>
+<div id="add-a-calculated-column" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Add a calculated
 column</h2>
 <p>In SQL, you can add a calculated column:</p>
 <pre class="sql"><code>SELECT *, tip/total_bill as tip_rate
@@ -1590,32 +1672,6 @@ of a <code>DataFrame</code> to append a new column:</p>
 ## 243       18.78  3.00  Female     No  Thur  Dinner     2  0.159744
 ## 
 ## [244 rows x 8 columns]</code></pre>
-<pre class="python"><code>tips.nlargest(10 + 5, columns=&quot;tip&quot;).tail(10)</code></pre>
-<pre><code>##      total_bill   tip     sex smoker   day    time  size
-## 183       23.17  6.50    Male    Yes   Sun  Dinner     4
-## 214       28.17  6.50  Female    Yes   Sat  Dinner     3
-## 47        32.40  6.00    Male     No   Sun  Dinner     4
-## 239       29.03  5.92    Male     No   Sat  Dinner     3
-## 88        24.71  5.85    Male     No  Thur   Lunch     2
-## 181       23.33  5.65    Male    Yes   Sun  Dinner     2
-## 44        30.40  5.60    Male     No   Sun  Dinner     4
-## 52        34.81  5.20  Female     No   Sun  Dinner     4
-## 85        34.83  5.17  Female     No  Thur   Lunch     4
-## 211       25.89  5.16    Male    Yes   Sat  Dinner     4</code></pre>
-<pre class="python"><code>tips.nlargest(10, columns=&quot;tip&quot;).tail(10)</code></pre>
-<pre><code>##      total_bill    tip     sex smoker   day    time  size
-## 170       50.81  10.00    Male    Yes   Sat  Dinner     3
-## 212       48.33   9.00    Male     No   Sat  Dinner     4
-## 23        39.42   7.58    Male     No   Sat  Dinner     4
-## 59        48.27   6.73    Male     No   Sat  Dinner     4
-## 141       34.30   6.70    Male     No  Thur   Lunch     6
-## 183       23.17   6.50    Male    Yes   Sun  Dinner     4
-## 214       28.17   6.50  Female    Yes   Sat  Dinner     3
-## 47        32.40   6.00    Male     No   Sun  Dinner     4
-## 239       29.03   5.92    Male     No   Sat  Dinner     3
-## 88        24.71   5.85    Male     No  Thur   Lunch     2</code></pre>
-<p><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nlargest.html">pandas.DataFrame.nlargest</a></p>
-<p><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nsmallest.html">pandas.DataFrame.nsmallest</a></p>
 </div>
 </div>
 

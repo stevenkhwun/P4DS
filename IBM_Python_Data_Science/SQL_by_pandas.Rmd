@@ -23,9 +23,20 @@ warnings.filterwarnings('ignore')
 ```
 
 
+<div class="alert alert-block alert-info" style="margin-top: 20px">
+<h5>Python method/function used</h5>
+
+* <b>[pandas.DataFrame.drop_duplicates()](#dropduplicates)</b>
+* <b>[pandas.DataFrame.head()](#head)</b>
+* <b>[pandas.DataFrame.nlargest()](#nlargest)</b>
+
+</div>
+
 <hr>
 
 <font size="6">Introduction</font>
+
+(This page is adapted from pandas' [Comparison with SQL](https://pandas.pydata.org/docs/getting_started/comparison/comparison_with_sql.html#) and a Medium article [Pandas equivalent of 10 useful SQL queries](https://towardsdatascience.com/pandas-equivalent-of-10-useful-sql-queries-f79428e60bd9) by _Dorian Lazar_.)
 
 This page is meant to provide some examples of how various SQL operations would be performed using pandas.
 
@@ -82,7 +93,7 @@ df = df.sort_values("col1")
 In SQL, selection is done using a comma-separated list of columns you’d like to select (or a * to select all columns):
 
 
-```{SQL eval=FALSE}
+```sql
 SELECT total_bill, tip, smoker, time
 FROM tips;
 ```
@@ -95,11 +106,73 @@ tips[["total_bill", "tip", "smoker", "time"]]
 
 Calling the `DataFrame` without the list of column names would display all columns (akin to SQL’s *).
 
+## SELECT DISTINCT{#dropduplicates}
+
+The <b>SELECT DISTINCT</b> statement returns only unique rows from a table. In a data frame there may be duplicate values. If you want to get only distinct rows (remove duplicates) it is as simple as calling the `.drop_duplicates()` method.
+
+```{python}
+tips[['sex']].drop_duplicates()
+```
+
+## LIMIT{#head}
+
+```sql
+SELECT TOP number col1, col2, ... FROM table
+```
+
+or
+
+```sql
+SELECT col1, col2, ... FROM table LIMIT number
+```
+
+The <b>TOP</b> or <b>LIMIT</b> keyword in SQL is used to limit the number of returned rows from the top of the table.
+
+In pandas this is very easy to do with `.head(number)` method. Pandas also has the `.tail(number)` method for showing the rows from the end of data frame.
+
+For example, to execute the following SQL queries:
+
+```sql
+SELECT * FROM tips
+LIMIT 5;
+```
+
+We can simple run the following code:
+
+```{python}
+tips.head(5)
+```
+
+## Top n rows with OFFSET{#nlargest}
+
+In SQL, we use <b>OFFSET</b> to skip the first n rows from displaying. For example, if we want to inspect from the 11th entry of the table, we can use <b>OFFSET 10</b>.
+
+In pandas, we can do similar thing by using <b>.nlargest()</b> method. However, we can only act on the columns which can be ordered and only displayed the ordered table.
+
+For example, the following SQL code displays a table which lists 10 entries started from the 6th largest tips:
+
+```sql
+SELECT * FROM tips
+ORDER BY tip DESC
+LIMIT 10 OFFSET 5;
+```
+
+We can do this in pandas by the following codes:
+
+```{python}
+tips.nlargest(10 + 5, columns="tip").tail(10)
+```
+
+In fact, the above code select the top 16 (10 + 5) rows according to the amount of tips received. However, it only display the last 10 rows (`.tail(10)`). Effectively, the code give a table of 10 larg tips starting from the 6th largest.
+
+We can do similar operation with the `.nsmallest()` method. We can find more information on the website of pandas for [pandas.DataFrame.nlargest](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nlargest.html) and [pandas.DataFrame.nsmallest](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nsmallest.html) methods.
+
+
 ## Add a calculated column
 
 In SQL, you can add a calculated column:
 
-```{SQL eval=FALSE}
+```sql
 SELECT *, tip/total_bill as tip_rate
 FROM tips;
 ```
@@ -111,14 +184,6 @@ tips.assign(tip_rate=tips['tip'] / tips['total_bill'])
 ```
 
 
-```{python}
-tips.nlargest(10 + 5, columns="tip").tail(10)
-```
 
-```{python}
-tips.nlargest(10, columns="tip").tail(10)
-```
 
-[pandas.DataFrame.nlargest](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nlargest.html)
 
-[pandas.DataFrame.nsmallest](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nsmallest.html)
