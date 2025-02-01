@@ -29,6 +29,7 @@ warnings.filterwarnings('ignore')
 * <b>[pandas.DataFrame.drop_duplicates()](#dropduplicates)</b>
 * <b>[pandas.DataFrame.head()](#head)</b>
 * <b>[pandas.DataFrame.nlargest()](#nlargest)</b>
+* <b>[pandas.DataFrame.loc\[\]](#loc)</b>
 
 </div>
 
@@ -58,7 +59,6 @@ url = (
 tips = pd.read_csv(url)
 tips.head(5)
 ```
-
 
 We will also use the `usvideos` dataset in some examples.
 
@@ -183,7 +183,109 @@ With pandas, you can use the `DataFrame.assign()` method of a `DataFrame` to app
 tips.assign(tip_rate=tips['tip'] / tips['total_bill'])
 ```
 
+# WHERE
 
+## Boolean indexing
 
+Filtering in SQL is done via a WHERE clause.
 
+```sql
+SELECT *
+FROM tips
+WHERE time = 'Dinner';
+```
+DataFrames can be filtered in multiple ways; the most intuitive of which is using _**boolean indexing**_.
 
+```{python}
+tips[tips["time"] == "Dinner"].head(5)
+```
+
+The above statement is simply passing a Series of True/False objects to the DataFrame, returning all row with True.
+
+```{python}
+is_dinner = tips["time"] == "Dinner"
+is_dinner
+```
+
+```{python}
+is_dinner.value_counts()
+```
+
+```{python}
+tips[is_dinner]
+```
+
+Following is an alternative way using `df.loc`{#loc} method, which can specify the columns to be included in the output.
+
+```sql
+SELECT total_bill, tip, time, size 
+FROM tips
+WHERE time = 'Dinner';
+```
+
+```{python}
+tips.loc[tips["time"]=="Dinner", ["total_bill", "tip", "time", "size"]]
+```
+
+## <b>OR</b> and <b>AND</b>
+
+Just like SQL's `OR` and `AND`, multiple conditions can be passed to a DataFrame using `|` (`OR`) and `&` (`AND`).
+
+Tips of more than $5 at Dinner meals:
+
+```sql
+SELECT *
+FROM tips
+WHERE time = 'Dinner' AND tip > 5.00;
+```
+
+```{python}
+tips[(tips["time"] == "Dinner") & (tips["tip"] > 5.00)]
+```
+
+Tips by parties of at least 5 diners OR bill total was more than $45:
+
+```sql
+SELECT *
+FROM tips
+WHERE size >= 5 OR total_bill > 45;
+```
+
+```{python}
+tips[(tips["size"] >= 5) | (tips["total_bill"] > 45)]
+```
+
+## NULL checking
+
+NULL checking is done using the `notna()` and `isna()` mehtods.
+
+```{python}
+frame = pd.DataFrame(
+    {"col1": ["A", "B", np.NaN, "C", "D"], "col2": ["F", np.NaN, "G", "H", "I"]}
+    )
+frame
+```
+
+Assume we have a table of the same structure as our DataFrame above. We can see on the records wher `col2` IS NULL with the following query:
+
+```sql
+SELECT *
+FROM frame
+WHERE col2 IS NULL;
+```
+
+```{python}
+frame[frame["col2"].isna()]
+```
+
+Getting items where `col1` IS NOT NULL can be done with `notna()`.
+
+```sql
+SELECT *
+FROM frame
+WHERE col1 IS NOT NULL;
+```
+
+```{python}
+frame[frame["col1"].notna()]
+```

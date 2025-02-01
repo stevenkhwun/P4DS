@@ -1486,7 +1486,7 @@ font-size: 0.95em;
 
 <h1 class="title toc-ignore">Running SQL using <b>pandas</b></h1>
 <h4 class="author">SW</h4>
-<h4 class="date">Last updated: 2025-01-31</h4>
+<h4 class="date">Last updated: 2025-02-01</h4>
 
 </div>
 
@@ -1499,6 +1499,7 @@ Python method/function used
 <li><b><a href="#dropduplicates">pandas.DataFrame.drop_duplicates()</a></b></li>
 <li><b><a href="#head">pandas.DataFrame.head()</a></b></li>
 <li><b><a href="#nlargest">pandas.DataFrame.nlargest()</a></b></li>
+<li><b><a href="#loc">pandas.DataFrame.loc[]</a></b></li>
 </ul>
 </div>
 <hr>
@@ -1672,6 +1673,164 @@ of a <code>DataFrame</code> to append a new column:</p>
 ## 243       18.78  3.00  Female     No  Thur  Dinner     2  0.159744
 ## 
 ## [244 rows x 8 columns]</code></pre>
+</div>
+</div>
+<div id="where" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> WHERE</h1>
+<div id="boolean-indexing" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Boolean indexing</h2>
+<p>Filtering in SQL is done via a WHERE clause.</p>
+<pre class="sql"><code>SELECT *
+FROM tips
+WHERE time = &#39;Dinner&#39;;</code></pre>
+<p>DataFrames can be filtered in multiple ways; the most intuitive of
+which is using <em><strong>boolean indexing</strong></em>.</p>
+<pre class="python"><code>tips[tips[&quot;time&quot;] == &quot;Dinner&quot;].head(5)</code></pre>
+<pre><code>##    total_bill   tip     sex smoker  day    time  size
+## 0       16.99  1.01  Female     No  Sun  Dinner     2
+## 1       10.34  1.66    Male     No  Sun  Dinner     3
+## 2       21.01  3.50    Male     No  Sun  Dinner     3
+## 3       23.68  3.31    Male     No  Sun  Dinner     2
+## 4       24.59  3.61  Female     No  Sun  Dinner     4</code></pre>
+<p>The above statement is simply passing a Series of True/False objects
+to the DataFrame, returning all row with True.</p>
+<pre class="python"><code>is_dinner = tips[&quot;time&quot;] == &quot;Dinner&quot;
+is_dinner</code></pre>
+<pre><code>## 0      True
+## 1      True
+## 2      True
+## 3      True
+## 4      True
+##        ... 
+## 239    True
+## 240    True
+## 241    True
+## 242    True
+## 243    True
+## Name: time, Length: 244, dtype: bool</code></pre>
+<pre class="python"><code>is_dinner.value_counts()</code></pre>
+<pre><code>## time
+## True     176
+## False     68
+## Name: count, dtype: int64</code></pre>
+<pre class="python"><code>tips[is_dinner]</code></pre>
+<pre><code>##      total_bill   tip     sex smoker   day    time  size
+## 0         16.99  1.01  Female     No   Sun  Dinner     2
+## 1         10.34  1.66    Male     No   Sun  Dinner     3
+## 2         21.01  3.50    Male     No   Sun  Dinner     3
+## 3         23.68  3.31    Male     No   Sun  Dinner     2
+## 4         24.59  3.61  Female     No   Sun  Dinner     4
+## ..          ...   ...     ...    ...   ...     ...   ...
+## 239       29.03  5.92    Male     No   Sat  Dinner     3
+## 240       27.18  2.00  Female    Yes   Sat  Dinner     2
+## 241       22.67  2.00    Male    Yes   Sat  Dinner     2
+## 242       17.82  1.75    Male     No   Sat  Dinner     2
+## 243       18.78  3.00  Female     No  Thur  Dinner     2
+## 
+## [176 rows x 7 columns]</code></pre>
+<p>Following is an alternative way using <code id="loc">df.loc</code>
+method, which can specify the columns to be included in the output.</p>
+<pre class="sql"><code>SELECT total_bill, tip, time, size 
+FROM tips
+WHERE time = &#39;Dinner&#39;;</code></pre>
+<pre class="python"><code>tips.loc[tips[&quot;time&quot;]==&quot;Dinner&quot;, [&quot;total_bill&quot;, &quot;tip&quot;, &quot;time&quot;, &quot;size&quot;]]</code></pre>
+<pre><code>##      total_bill   tip    time  size
+## 0         16.99  1.01  Dinner     2
+## 1         10.34  1.66  Dinner     3
+## 2         21.01  3.50  Dinner     3
+## 3         23.68  3.31  Dinner     2
+## 4         24.59  3.61  Dinner     4
+## ..          ...   ...     ...   ...
+## 239       29.03  5.92  Dinner     3
+## 240       27.18  2.00  Dinner     2
+## 241       22.67  2.00  Dinner     2
+## 242       17.82  1.75  Dinner     2
+## 243       18.78  3.00  Dinner     2
+## 
+## [176 rows x 4 columns]</code></pre>
+</div>
+<div id="or-and-and" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> <b>OR</b> and
+<b>AND</b></h2>
+<p>Just like SQL’s <code>OR</code> and <code>AND</code>, multiple
+conditions can be passed to a DataFrame using <code>|</code>
+(<code>OR</code>) and <code>&amp;</code> (<code>AND</code>).</p>
+<p>Tips of more than $5 at Dinner meals:</p>
+<pre class="sql"><code>SELECT *
+FROM tips
+WHERE time = &#39;Dinner&#39; AND tip &gt; 5.00;</code></pre>
+<pre class="python"><code>tips[(tips[&quot;time&quot;] == &quot;Dinner&quot;) &amp; (tips[&quot;tip&quot;] &gt; 5.00)]</code></pre>
+<pre><code>##      total_bill    tip     sex smoker  day    time  size
+## 23        39.42   7.58    Male     No  Sat  Dinner     4
+## 44        30.40   5.60    Male     No  Sun  Dinner     4
+## 47        32.40   6.00    Male     No  Sun  Dinner     4
+## 52        34.81   5.20  Female     No  Sun  Dinner     4
+## 59        48.27   6.73    Male     No  Sat  Dinner     4
+## 116       29.93   5.07    Male     No  Sun  Dinner     4
+## 155       29.85   5.14  Female     No  Sun  Dinner     5
+## 170       50.81  10.00    Male    Yes  Sat  Dinner     3
+## 172        7.25   5.15    Male    Yes  Sun  Dinner     2
+## 181       23.33   5.65    Male    Yes  Sun  Dinner     2
+## 183       23.17   6.50    Male    Yes  Sun  Dinner     4
+## 211       25.89   5.16    Male    Yes  Sat  Dinner     4
+## 212       48.33   9.00    Male     No  Sat  Dinner     4
+## 214       28.17   6.50  Female    Yes  Sat  Dinner     3
+## 239       29.03   5.92    Male     No  Sat  Dinner     3</code></pre>
+<p>Tips by parties of at least 5 diners OR bill total was more than
+$45:</p>
+<pre class="sql"><code>SELECT *
+FROM tips
+WHERE size &gt;= 5 OR total_bill &gt; 45;</code></pre>
+<pre class="python"><code>tips[(tips[&quot;size&quot;] &gt;= 5) | (tips[&quot;total_bill&quot;] &gt; 45)]</code></pre>
+<pre><code>##      total_bill    tip     sex smoker   day    time  size
+## 59        48.27   6.73    Male     No   Sat  Dinner     4
+## 125       29.80   4.20  Female     No  Thur   Lunch     6
+## 141       34.30   6.70    Male     No  Thur   Lunch     6
+## 142       41.19   5.00    Male     No  Thur   Lunch     5
+## 143       27.05   5.00  Female     No  Thur   Lunch     6
+## 155       29.85   5.14  Female     No   Sun  Dinner     5
+## 156       48.17   5.00    Male     No   Sun  Dinner     6
+## 170       50.81  10.00    Male    Yes   Sat  Dinner     3
+## 182       45.35   3.50    Male    Yes   Sun  Dinner     3
+## 185       20.69   5.00    Male     No   Sun  Dinner     5
+## 187       30.46   2.00    Male    Yes   Sun  Dinner     5
+## 212       48.33   9.00    Male     No   Sat  Dinner     4
+## 216       28.15   3.00    Male    Yes   Sat  Dinner     5</code></pre>
+</div>
+<div id="null-checking" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> NULL checking</h2>
+<p>NULL checking is done using the <code>notna()</code> and
+<code>isna()</code> mehtods.</p>
+<pre class="python"><code>frame = pd.DataFrame(
+    {&quot;col1&quot;: [&quot;A&quot;, &quot;B&quot;, np.NaN, &quot;C&quot;, &quot;D&quot;], &quot;col2&quot;: [&quot;F&quot;, np.NaN, &quot;G&quot;, &quot;H&quot;, &quot;I&quot;]}
+    )
+frame</code></pre>
+<pre><code>##   col1 col2
+## 0    A    F
+## 1    B  NaN
+## 2  NaN    G
+## 3    C    H
+## 4    D    I</code></pre>
+<p>Assume we have a table of the same structure as our DataFrame above.
+We can see on the records wher <code>col2</code> IS NULL with the
+following query:</p>
+<pre class="sql"><code>SELECT *
+FROM frame
+WHERE col2 IS NULL;</code></pre>
+<pre class="python"><code>frame[frame[&quot;col2&quot;].isna()]</code></pre>
+<pre><code>##   col1 col2
+## 1    B  NaN</code></pre>
+<p>Getting items where <code>col1</code> IS NOT NULL can be done with
+<code>notna()</code>.</p>
+<pre class="sql"><code>SELECT *
+FROM frame
+WHERE col1 IS NOT NULL;</code></pre>
+<pre class="python"><code>frame[frame[&quot;col1&quot;].notna()]</code></pre>
+<pre><code>##   col1 col2
+## 0    A    F
+## 1    B  NaN
+## 3    C    H
+## 4    D    I</code></pre>
 </div>
 </div>
 
