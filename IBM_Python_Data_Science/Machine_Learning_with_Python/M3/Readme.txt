@@ -7,3 +7,5 @@ Regression_Trees_Taxi_Tip.ipynb      Original course lab, revised to "7_Regressi
 yellow_tripdata.csv                  Dataset used in "Regression_Trees_Taxi_Tip.ipynb"
 decision_tree_svm_ccFraud.ipynb      Original course lab, revised to "8_Decision_Tree_and_SVM.ipynb" in parent directory
 KNN_Classification.ipynb             Original course lab, revised to "9_KNN_Classification.ipynb" in parent directory
+teleCust1000t.csv                    Dataset used in "KNN_Classification.ipynb"
+Random_Forests_XGBoost.ipynb       Original course lab, revised to "10_Random_Forests.ipynb" in parent directory
