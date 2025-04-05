@@ -6,3 +6,4 @@ drug200.csv                          Dataset used in "Decision_trees.ipynb"
 Regression_Trees_Taxi_Tip.ipynb      Original course lab, revised to "7_Regression_Trees.ipynb" in parent directory
 yellow_tripdata.csv                  Dataset used in "Regression_Trees_Taxi_Tip.ipynb"
 decision_tree_svm_ccFraud.ipynb      Original course lab, revised to "8_Decision_Tree_and_SVM.ipynb" in parent directory
+KNN_Classification.ipynb             Original course lab, revised to "9_KNN_Classification.ipynb" in parent directory
